@@ -4,25 +4,14 @@ export const Container = styled.div`
   max-width: 1440px;
   padding: 0 32px;
   margin: 0 auto;
+  background-color: #fff;
+  height: 100%;
   display: grid;
   gap: 80px;
   grid-template-columns: auto 40%;
 
   @media screen and (max-width: 968px) {
     grid-template-columns: auto;
-  }
-`;
-
-export const ThumbnailGrid = styled.div`
-  display: grid;
-  gap: 16px;
-
-  grid-template-rows: auto;
-  grid-template-columns: auto 1fr;
-
-  @media screen and (max-width: 968px) {
-    grid-template-columns: auto;
-    grid-template-rows: auto 1fr;
   }
 `;
 

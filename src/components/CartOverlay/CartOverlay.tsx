@@ -95,11 +95,14 @@ class CartOverlay extends PureComponent<CartOverlayProps> {
 
   renderDropdown() {
     return (
-      <S.Dropdown ref={this.dropdownRef}>
-        {this.renderHeader()}
-        {this.renderProducts()}
-        {this.renderFooter()}
-      </S.Dropdown>
+      <S.DropdownWrapper>
+        <S.Dropdown ref={this.dropdownRef}>
+          {this.renderHeader()}
+          {this.renderProducts()}
+          {this.renderFooter()}
+        </S.Dropdown>
+        <S.Spacer />
+      </S.DropdownWrapper>
     );
   }
 

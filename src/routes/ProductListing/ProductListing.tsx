@@ -1,37 +1,80 @@
 import { PureComponent } from "react";
 import { Helmet } from "react-helmet";
 import { connect } from "react-redux";
-import { Params } from "react-router-dom";
+import { Navigate, Params } from "react-router-dom";
 import ProductCard from "../../components/ProductCard";
-import { RootState } from "../../store";
-import { getPricedProducts } from "../../store/categorySlice";
+import { AppDispatch, RootState } from "../../store";
+import {
+  fetchCategoryProducts,
+  getPricedProducts,
+} from "../../store/categorySlice";
 import { PricedProductPreview } from "../../types";
 import { capitalize, withRouterParams } from "../../utils";
 import * as S from "./ProductListing.style";
 
 class ProductListing extends PureComponent<ProductListingProps> {
-  render() {
-    const { params, products } = this.props;
+  state: ProductListingState = {
+    validCategoryName: true,
+  };
 
-    const categoryName = params.categoryId || "all";
-    const categoryProducts = products[categoryName] || [];
+  componentDidMount() {
+    this.fetchCategoryProducts();
+  }
+
+  componentDidUpdate(prevProps: ProductListingProps) {
+    if (prevProps.params.categoryId !== this.props.params.categoryId) {
+      this.fetchCategoryProducts();
+    }
+  }
+
+  fetchCategoryProducts() {
+    const { params, categoryNames, fetchCategoryProducts } = this.props;
+    const categoryName = params.categoryId;
+
+    if (!categoryName || !categoryNames.includes(categoryName)) {
+      this.setState({
+        validCategoryName: false,
+      });
+      return;
+    }
+
+    fetchCategoryProducts(categoryName);
+  }
+
+  renderMeta() {
+    const { params } = this.props;
+
+    return (
+      <Helmet>
+        <title>
+          {capitalize(params.categoryId as string)} - Scandiweb Junior React
+          Test
+        </title>
+      </Helmet>
+    );
+  }
+
+  render() {
+    const { params } = this.props;
+    const { validCategoryName } = this.state;
+
+    if (!validCategoryName) {
+      return <Navigate to="/" />;
+    }
 
     return (
       <>
-        <Helmet>
-          <title>
-            {capitalize(categoryName)} - Scandiweb Junior React Test
-          </title>
-        </Helmet>
         <S.Container>
-          <S.Heading>{categoryName}</S.Heading>
-          <S.ProductGrid>{this.renderProducts(categoryProducts)}</S.ProductGrid>
+          <S.Heading>{params.categoryId as string}</S.Heading>
+          <S.ProductGrid>{this.renderProducts()}</S.ProductGrid>
         </S.Container>
       </>
     );
   }
 
-  renderProducts(products: PricedProductPreview[]) {
+  renderProducts() {
+    const { products } = this.props;
+
     return (
       <>
         {products.map((product) => {
@@ -44,13 +87,27 @@ class ProductListing extends PureComponent<ProductListingProps> {
 
 export interface ProductListingProps {
   params: Params;
-  products: {
-    [key: string]: PricedProductPreview[];
-  };
+  loading: boolean;
+  products: PricedProductPreview[];
+  categoryNames: string[];
+  fetchCategoryProducts: (title: string) => void;
+}
+
+export interface ProductListingState {
+  validCategoryName: boolean;
 }
 
 export const mapStateToProps = (state: RootState) => ({
+  loading: state.categories.loadingProducts,
   products: getPricedProducts(state),
+  categoryNames: state.categories.categoryNames,
 });
 
-export default withRouterParams(connect(mapStateToProps)(ProductListing));
+export const mapDispatchToProps = (dispatch: AppDispatch) => ({
+  fetchCategoryProducts: (title: string) =>
+    dispatch(fetchCategoryProducts(title)),
+});
+
+export default withRouterParams(
+  connect(mapStateToProps, mapDispatchToProps)(ProductListing)
+);

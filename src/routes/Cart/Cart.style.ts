@@ -4,6 +4,8 @@ export const Container = styled.div`
   max-width: 1440px;
   padding: 0 32px;
   margin: 0 auto;
+  min-height: calc(100vh - 80px * 3);
+  background-color: #fff;
 `;
 export const Heading = styled.h1`
   text-transform: uppercase;
@@ -19,7 +21,7 @@ export const ItemList = styled.div`
 
 export const Item = styled.div`
   display: grid;
-  grid-template-columns: 1fr auto 160px;
+  grid-template-columns: 1fr auto 240px;
   column-gap: 16px;
   padding: 16px 0;
   border-top: 1px solid #e5e5e5;
@@ -58,11 +60,11 @@ export const CountRow = styled.div`
   font-weight: 500;
 `;
 
-export const Thumbnail = styled.img`
-  height: 100%;
+export const Thumbnail = styled.div`
   width: 100%;
-  aspect-ratio: 2/3;
-  object-fit: cover;
+  height: 100%;
+  display: flex;
+  align-items: center;
 `;
 
 export const Label = styled.span`

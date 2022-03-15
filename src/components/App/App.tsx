@@ -5,7 +5,7 @@ import Cart from "../../routes/Cart/Cart";
 import ProductDescription from "../../routes/ProductDescription/ProductDescription";
 import ProductListing from "../../routes/ProductListing";
 import { AppDispatch, RootState } from "../../store";
-import { fetchCategories } from "../../store/categorySlice";
+import { fetchCategoryNames } from "../../store/categorySlice";
 import { fetchCurrencies } from "../../store/currencySlice";
 import CartOverlay from "../CartOverlay";
 import Nav from "../Nav";
@@ -34,8 +34,9 @@ class App extends PureComponent<AppProps> {
   };
 
   componentDidMount() {
-    this.props.fetchCategories();
-    this.props.fetchCurrencies();
+    const { fetchCurrencies, fetchCategoryNames } = this.props;
+    fetchCurrencies();
+    fetchCategoryNames();
   }
 
   render() {
@@ -65,18 +66,18 @@ interface AppProps {
   categoriesLoading: boolean;
   currenciesLoading: boolean;
   isCartOverlayOpen: boolean;
-  fetchCategories: () => void;
+  fetchCategoryNames: () => void;
   fetchCurrencies: () => void;
 }
 
 export const mapStateToProps = (state: RootState) => ({
-  categoriesLoading: state.categories.loading,
+  categoriesLoading: state.categories.loadingNames,
   currenciesLoading: state.currency.loading,
   isCartOverlayOpen: state.cart.isOverlayOpen,
 });
 
 export const mapDispatchToProps = (dispatch: AppDispatch) => ({
-  fetchCategories: () => dispatch(fetchCategories()),
+  fetchCategoryNames: () => dispatch(fetchCategoryNames()),
   fetchCurrencies: () => dispatch(fetchCurrencies()),
 });
 

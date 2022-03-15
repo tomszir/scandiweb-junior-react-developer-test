@@ -3,6 +3,7 @@ import { Helmet } from "react-helmet";
 import { connect } from "react-redux";
 import { Params } from "react-router-dom";
 import AttributeSelect from "../../components/AttributeSelect";
+import ProductGallery from "../../components/ProductGallery";
 import { AppDispatch, RootState } from "../../store";
 import { addToCart } from "../../store/cartSlice";
 import { fetchProductById, getPricedProduct } from "../../store/productSlice";
@@ -38,6 +39,7 @@ class ProductDescription extends PureComponent<
 
   componentDidUpdate(prevProps: ProductDescriptionProps) {
     if (prevProps.params.categoryId !== this.props.params.categoryId) {
+      console.log("update!");
       this.updateProduct();
     }
   }
@@ -51,18 +53,7 @@ class ProductDescription extends PureComponent<
   }
 
   renderProductImages(images: string[]) {
-    return (
-      <S.ThumbnailGrid>
-        {images.length > 1 && (
-          <S.ThumbnailList>
-            {images.slice(1).map((img) => {
-              return <S.Thumbnail key={img} alt="thumb" src={img} />;
-            })}
-          </S.ThumbnailList>
-        )}
-        <S.BigThumbnail alt="thumb" src={images[0]} />
-      </S.ThumbnailGrid>
-    );
+    return <ProductGallery images={images} />;
   }
 
   renderProductName(product: PricedProduct) {

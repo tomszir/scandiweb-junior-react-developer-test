@@ -23,6 +23,11 @@ export const Price = styled.span`
   line-height: 160%;
 `;
 
+export const Brand = styled.span`
+  font-size: 18px;
+  font-weight: 600;
+`;
+
 export const ThumbnailWrapper = styled.div`
   position: relative;
   display: flex;

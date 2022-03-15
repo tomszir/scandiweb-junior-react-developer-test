@@ -2,24 +2,42 @@ import { gql } from "@apollo/client";
 import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { RootState } from ".";
 import { client } from "../gql";
-import { PricedProductPreview, ProductPreview } from "../types";
+import { ProductPreview } from "../types";
 import { productToPricedProduct } from "../utils/index";
 
 interface CategoryState {
-  loading: boolean;
-  products: {
-    [key: string]: ProductPreview[];
-  };
+  loadingNames: boolean;
+  loadingProducts: boolean;
+  categoryNames: string[];
+  currentCategoryName: string;
+  products: ProductPreview[];
 }
 
 const initialState: CategoryState = {
-  loading: false,
-  products: {},
+  loadingNames: true,
+  loadingProducts: true,
+  currentCategoryName: "",
+  categoryNames: [],
+  products: [],
+};
+
+const CATEGORY_NAME_QUERY = gql`
+  query {
+    categories {
+      name
+    }
+  }
+`;
+
+type CategoryNameQueryData = {
+  categories: {
+    name: string;
+  }[];
 };
 
 const CATEGORIES_QUERY = gql`
-  query {
-    categories {
+  query Category($title: String!) {
+    category(input: { title: $title }) {
       name
       products {
         id
@@ -39,18 +57,39 @@ const CATEGORIES_QUERY = gql`
   }
 `;
 
-type CategoriesQueryData = {
-  categories: {
+type CategoryQueryData = {
+  category: {
     name: string;
     products: ProductPreview[];
-  }[];
+  };
 };
 
-export const fetchCategories = createAsyncThunk(
-  "categories/fetchInitialCategories",
+type CategoryQueryVariables = {
+  title: string;
+};
+
+export const fetchCategoryNames = createAsyncThunk(
+  "categories/fetchCategoryNames",
   async () => {
-    const { data } = await client.query<CategoriesQueryData>({
+    const { data } = await client.query<CategoryNameQueryData>({
+      query: CATEGORY_NAME_QUERY,
+    });
+
+    return data;
+  }
+);
+
+export const fetchCategoryProducts = createAsyncThunk(
+  "categories/fetchCategoryProducts",
+  async (title: string) => {
+    const { data } = await client.query<
+      CategoryQueryData,
+      CategoryQueryVariables
+    >({
       query: CATEGORIES_QUERY,
+      variables: {
+        title,
+      },
     });
 
     return data;
@@ -62,49 +101,42 @@ export const categorySlice = createSlice({
   name: "categories",
   reducers: {},
   extraReducers: (builder) => {
-    builder.addCase(fetchCategories.pending, (state) => {
-      state.loading = true;
+    builder.addCase(fetchCategoryProducts.pending, (state) => {
+      state.loadingProducts = true;
     });
     builder.addCase(
-      fetchCategories.fulfilled,
-      (state, action: PayloadAction<CategoriesQueryData>) => {
-        const { categories } = action.payload;
+      fetchCategoryProducts.fulfilled,
+      (state, action: PayloadAction<CategoryQueryData>) => {
+        const {
+          category: { products },
+        } = action.payload;
 
-        state.products = categories.reduce((a, b) => {
-          return { ...a, [b.name]: b.products };
-        }, {});
-        state.loading = false;
+        state.loadingProducts = false;
+        state.products = products;
+      }
+    );
+
+    builder.addCase(fetchCategoryNames.pending, (state) => {
+      state.loadingNames = true;
+    });
+    builder.addCase(
+      fetchCategoryNames.fulfilled,
+      (state, action: PayloadAction<CategoryNameQueryData>) => {
+        const {
+          payload: { categories },
+        } = action;
+
+        state.categoryNames = categories.map(({ name }) => name);
+        state.loadingNames = false;
       }
     );
   },
 });
 
-export const getCategoryNames = (state: RootState) =>
-  Object.keys(state.categories.products);
-
-export const getPricedProducts: (state: RootState) => {
-  [key: string]: PricedProductPreview[];
-} = (state) => {
-  return Object.keys(state.categories.products)
-    .map((key) => {
-      const products = state.categories.products[key];
-
-      return {
-        key,
-        products: products.map((p) =>
-          productToPricedProduct(p, state.currency.current)
-        ),
-      };
-    })
-    .reduce(
-      (a, b) => ({
-        ...a,
-        [b.key]: b.products,
-      }),
-      {}
-    );
+export const getPricedProducts = (state: RootState) => {
+  return state.categories.products.map((p) =>
+    productToPricedProduct(p, state.currency.current)
+  );
 };
-
-// export const {} = categorySlice.actions;
 
 export default categorySlice.reducer;

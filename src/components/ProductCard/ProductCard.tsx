@@ -20,7 +20,7 @@ class ProductCard extends PureComponent<ProductCardProps, ProductCardState> {
 
   render() {
     const { product, addToCart } = this.props;
-    const { id, price, inStock, name, gallery } = product;
+    const { id, price, brand, inStock, name, gallery } = product;
     const thumbnailUrl = gallery[0];
 
     if (this.state.navigate) {
@@ -39,6 +39,7 @@ class ProductCard extends PureComponent<ProductCardProps, ProductCardState> {
             <EmptyCartIcon color="#fff" />
           </S.CartButton>
         </S.ThumbnailWrapper>
+        <S.Brand>{brand}</S.Brand>
         <S.Name onClick={this.navigate}>{name}</S.Name>
         <S.Price>
           {price.currency.symbol}

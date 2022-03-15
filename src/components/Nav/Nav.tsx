@@ -2,18 +2,17 @@ import { PureComponent } from "react";
 import { connect } from "react-redux";
 import { BrandIcon } from "../../icons";
 import { RootState } from "../../store";
-import { getCategoryNames } from "../../store/categorySlice";
 import CartButton from "../CartButton";
 import CurrencyDropdown from "../CurrencyDropdown";
 import * as S from "./Nav.style";
 
 class Nav extends PureComponent<NavProps> {
   renderLinks() {
-    const { categories } = this.props;
+    const { categoryNames } = this.props;
 
     return (
       <S.Left>
-        {categories.map((category) => {
+        {categoryNames.map((category) => {
           return (
             <S.Link key={category} to={category}>
               {category}
@@ -36,20 +35,22 @@ class Nav extends PureComponent<NavProps> {
   render() {
     return (
       <S.Wrapper>
-        {this.renderLinks()}
-        <BrandIcon />
-        {this.renderRighSide()}
+        <S.Container>
+          {this.renderLinks()}
+          <BrandIcon />
+          {this.renderRighSide()}
+        </S.Container>
       </S.Wrapper>
     );
   }
 }
 
 export interface NavProps {
-  categories: string[];
+  categoryNames: string[];
 }
 
 export const mapStateToProps = (state: RootState) => ({
-  categories: getCategoryNames(state),
+  categoryNames: state.categories.categoryNames,
 });
 
 export default connect(mapStateToProps)(Nav);

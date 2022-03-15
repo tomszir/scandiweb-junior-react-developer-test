@@ -10,9 +10,16 @@ export const GlobalStyle = createGlobalStyle`
 
   html {
     font-size: 16px;
+    background-color: rgba(0,0,0,0.3);
   }
 
-  body {
-    overflow-y: scroll;
+  #root {
+    background-color: #fff;
+  }
+
+  html,
+  body,
+  #root {
+    min-height: 100%;
   }
 `;

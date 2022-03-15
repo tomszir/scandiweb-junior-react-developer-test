@@ -21,6 +21,10 @@ export const DropdownItem = styled.button`
   border: none;
   font-weight: 500;
   width: 100%;
+
+  &:hover {
+    background-color: rgba(0, 0, 0, 0.05);
+  }
 `;
 
 export const Symbol = styled.span`

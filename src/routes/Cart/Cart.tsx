@@ -1,5 +1,6 @@
 import { PureComponent } from "react";
 import { connect } from "react-redux";
+import ArrowGallery from "../../components/ArrowThumbnail";
 import AttributeSelect from "../../components/AttributeSelect";
 import { AppDispatch, RootState } from "../../store";
 import {
@@ -44,7 +45,9 @@ class Cart extends PureComponent<CartProps> {
           {amount}
           <S.CountButton onClick={onDecrement}>{"-"}</S.CountButton>
         </S.CountRow>
-        <S.Thumbnail alt="thumbnail" src={product.gallery[0]} />
+        <S.Thumbnail>
+          <ArrowGallery images={product.gallery} />
+        </S.Thumbnail>
       </S.Item>
     );
   };

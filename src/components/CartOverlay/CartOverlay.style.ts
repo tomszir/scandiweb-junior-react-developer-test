@@ -9,9 +9,8 @@ export const Overlay = styled.div`
   bottom: 0;
   z-index: 100000;
   position: absolute;
-  min-height: 100vh;
+  min-height: 80vh;
   height: 100%;
-  overflow: hidden;
 `;
 
 export const Wrapper = styled.div`
@@ -24,16 +23,22 @@ export const Wrapper = styled.div`
   height: 100%;
 `;
 
-export const Dropdown = styled.div`
+export const Spacer = styled.div`
+  width: 100%;
+  height: 80px;
+`;
+
+export const DropdownWrapper = styled.div`
   position: absolute;
   top: 0;
-  padding: 12px;
   width: 340px;
   right: 0;
-  max-height: 90%;
-  overflow: hidden;
-  overflow-y: auto;
+`;
+
+export const Dropdown = styled.div`
   background-color: #fff;
+
+  padding: 12px;
 `;
 
 export const Heading = styled.h2`

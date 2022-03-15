@@ -70,6 +70,7 @@ class CartOverlayProduct extends PureComponent<CartOverlayProductProps> {
 
     return (
       <S.DetailsRow>
+        <S.Brand>{product.brand}</S.Brand>
         <S.Name>{product.name}</S.Name>
         <S.Price>
           {price.currency.symbol}

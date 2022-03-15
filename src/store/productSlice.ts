@@ -32,7 +32,6 @@ export const PRODUCT_QUERY = gql`
       gallery
       description
       brand
-      category
       prices {
         currency {
           symbol

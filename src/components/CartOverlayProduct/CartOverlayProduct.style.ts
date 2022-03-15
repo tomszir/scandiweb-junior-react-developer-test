@@ -14,7 +14,10 @@ export const Thumbnail = styled.img`
   aspect-ratio: 4/5;
   object-fit: cover;
 `;
-
+export const Brand = styled.span`
+  font-size: 14px;
+  font-weight: 600;
+`;
 export const AmountRow = styled.div`
   height: 100%;
   display: flex;
