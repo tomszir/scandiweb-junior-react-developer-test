@@ -11,12 +11,15 @@ class AttributeSelect extends PureComponent<AttributeSelectProps> {
       ? selectedAttributes[set.id] === attr.id
       : i === 0;
 
+    console.log(!onSelect);
+
     return (
       <S.SwatchButton
         key={attr.id}
         active={active}
         color={attr.value}
-        onClick={() => onSelect(attr)}
+        onClick={() => onSelect && onSelect(attr)}
+        isDisabled={!onSelect}
       >
         {active && (
           <S.Icon>
@@ -35,7 +38,12 @@ class AttributeSelect extends PureComponent<AttributeSelectProps> {
       : i === 0;
 
     return (
-      <S.Button key={attr.id} active={active} onClick={() => onSelect(attr)}>
+      <S.Button
+        key={attr.id}
+        active={active}
+        onClick={() => onSelect && onSelect(attr)}
+        isDisabled={!onSelect}
+      >
         {attr.value}
       </S.Button>
     );
@@ -59,7 +67,7 @@ class AttributeSelect extends PureComponent<AttributeSelectProps> {
 export interface AttributeSelectProps {
   set: AttributeSet;
   selectedAttributes: { [key: string]: string };
-  onSelect: (attr: Attribute) => void;
+  onSelect?: (attr: Attribute) => void;
 }
 
 export default AttributeSelect;

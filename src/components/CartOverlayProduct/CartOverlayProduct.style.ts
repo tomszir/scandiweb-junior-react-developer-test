@@ -58,7 +58,7 @@ export const AttributeRow = styled.div`
   flex-wrap: wrap;
 `;
 
-export const SmallButton = styled.button<{ active?: boolean }>`
+export const SmallAttribute = styled.div<{ active?: boolean }>`
   outline: none;
 
   color: #000;
@@ -68,7 +68,6 @@ export const SmallButton = styled.button<{ active?: boolean }>`
   display: flex;
   font-size: 12px;
   align-items: center;
-  cursor: pointer;
   justify-content: center;
   border: 1px solid #000;
   background-color: transparent;
@@ -100,7 +99,22 @@ export const Icon = styled.div`
   }
 `;
 
-export const SmallSwatchButton = styled.button<{
+export const CountButton = styled.button`
+  outline: none;
+  cursor: pointer;
+
+  color: #000;
+  min-width: 24px;
+  height: 24px;
+  display: flex;
+  font-size: 22px;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid #000;
+  background-color: transparent;
+`;
+
+export const SmallSwatchAttribute = styled.div<{
   active?: boolean;
   color?: string;
 }>`
@@ -110,7 +124,6 @@ export const SmallSwatchButton = styled.button<{
   height: 24px;
   display: flex;
   align-items: center;
-  cursor: pointer;
   justify-content: center;
   border: 1px solid #000;
   background-color: ${({ color }) => color};

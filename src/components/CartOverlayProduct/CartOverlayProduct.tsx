@@ -2,30 +2,21 @@ import { PureComponent } from "react";
 import { connect } from "react-redux";
 import { CheckmarkIcon } from "../../icons";
 import { AppDispatch } from "../../store";
-import {
-  decrementItem,
-  incrementItem,
-  setActiveAttribute,
-} from "../../store/cartSlice";
+import { decrementItem, incrementItem } from "../../store/cartSlice";
 import { Attribute, AttributeSet, PricedProduct } from "../../types";
 import * as S from "./CartOverlayProduct.style";
 
 class CartOverlayProduct extends PureComponent<CartOverlayProductProps> {
-  setActiveAttribute = (set: AttributeSet, attr: Attribute) => {
-    const { product, setActiveAttribute } = this.props;
-    setActiveAttribute(product.id, set.id, attr.id);
-  };
-
   renderAttributeButton = (set: AttributeSet, attr: Attribute) => {
     const { selectedAttributes } = this.props;
 
     return (
-      <S.SmallButton
+      <S.SmallAttribute
+        key={attr.id}
         active={selectedAttributes[set.id] === attr.id}
-        onClick={() => this.setActiveAttribute(set, attr)}
       >
         {attr.value}
-      </S.SmallButton>
+      </S.SmallAttribute>
     );
   };
 
@@ -34,17 +25,13 @@ class CartOverlayProduct extends PureComponent<CartOverlayProductProps> {
     const active = selectedAttributes[set.id] === attr.id;
 
     return (
-      <S.SmallSwatchButton
-        color={attr.value}
-        active={active}
-        onClick={() => this.setActiveAttribute(set, attr)}
-      >
+      <S.SmallSwatchAttribute key={attr.id} color={attr.value} active={active}>
         {active && (
           <S.Icon>
             <CheckmarkIcon />
           </S.Icon>
         )}
-      </S.SmallSwatchButton>
+      </S.SmallSwatchAttribute>
     );
   };
 
@@ -60,7 +47,7 @@ class CartOverlayProduct extends PureComponent<CartOverlayProductProps> {
 
   renderAttribute = (set: AttributeSet) => {
     return (
-      <div>
+      <div key={set.name}>
         <S.AttributeName>{set.name}</S.AttributeName>
         <S.AttributeRow>{this.renderAttributeButtons(set)}</S.AttributeRow>
       </div>
@@ -94,17 +81,22 @@ class CartOverlayProduct extends PureComponent<CartOverlayProductProps> {
   }
 
   renderAmountButtons() {
-    const { product, amount, incrementItem, decrementItem } = this.props;
+    const {
+      product,
+      amount,
+      selectedAttributes,
+      incrementItem,
+      decrementItem,
+    } = this.props;
+
+    const onIncrement = () => incrementItem(product.id, selectedAttributes);
+    const onDecrement = () => decrementItem(product.id, selectedAttributes);
 
     return (
       <S.AmountRow>
-        <S.SmallButton onClick={() => incrementItem(product.id)}>
-          {"+"}
-        </S.SmallButton>
+        <S.CountButton onClick={onIncrement}>{"+"}</S.CountButton>
         {amount}
-        <S.SmallButton onClick={() => decrementItem(product.id)}>
-          {"-"}
-        </S.SmallButton>
+        <S.CountButton onClick={onDecrement}>{"-"}</S.CountButton>
       </S.AmountRow>
     );
   }
@@ -128,23 +120,21 @@ export interface CartOverlayProductProps {
   product: PricedProduct;
   amount: number;
   selectedAttributes: { [key: string]: string };
-  setActiveAttribute: (
+  incrementItem: (
     id: string,
-    attributeId: string,
-    attributeItemId: string
+    selectedAttributes: { [key: string]: string }
   ) => void;
-  incrementItem: (id: string) => void;
-  decrementItem: (id: string) => void;
+  decrementItem: (
+    id: string,
+    selectedAttributes: { [key: string]: string }
+  ) => void;
 }
 
 export const mapDispatchToProps = (dispatch: AppDispatch) => ({
-  setActiveAttribute: (
-    id: string,
-    attributeId: string,
-    attributeItemId: string
-  ) => dispatch(setActiveAttribute({ id, attributeId, attributeItemId })),
-  incrementItem: (id: string) => dispatch(incrementItem(id)),
-  decrementItem: (id: string) => dispatch(decrementItem(id)),
+  incrementItem: (id: string, selectedAttributes: { [key: string]: string }) =>
+    dispatch(incrementItem({ id, selectedAttributes })),
+  decrementItem: (id: string, selectedAttributes: { [key: string]: string }) =>
+    dispatch(decrementItem({ id, selectedAttributes })),
 });
 
 export default connect(null, mapDispatchToProps)(CartOverlayProduct);

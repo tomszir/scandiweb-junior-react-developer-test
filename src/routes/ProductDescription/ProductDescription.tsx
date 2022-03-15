@@ -6,7 +6,7 @@ import AttributeSelect from "../../components/AttributeSelect";
 import { AppDispatch, RootState } from "../../store";
 import { addToCart } from "../../store/cartSlice";
 import { fetchProductById, getPricedProduct } from "../../store/productSlice";
-import { CartItem, PricedProduct } from "../../types";
+import { Attribute, CartItem, PricedProduct } from "../../types";
 import { withRouterParams } from "../../utils";
 import * as S from "./ProductDescription.style";
 
@@ -50,8 +50,113 @@ class ProductDescription extends PureComponent<
     return <S.Container>Product not found.</S.Container>;
   }
 
+  renderProductImages(images: string[]) {
+    return (
+      <S.ThumbnailGrid>
+        {images.length > 1 && (
+          <S.ThumbnailList>
+            {images.slice(1).map((img) => {
+              return <S.Thumbnail key={img} alt="thumb" src={img} />;
+            })}
+          </S.ThumbnailList>
+        )}
+        <S.BigThumbnail alt="thumb" src={images[0]} />
+      </S.ThumbnailGrid>
+    );
+  }
+
+  renderProductName(product: PricedProduct) {
+    return (
+      <div>
+        <S.Brand>{product.brand}</S.Brand>
+        <S.Name>{product.name}</S.Name>
+      </div>
+    );
+  }
+
+  renderProductAttributes(product: PricedProduct) {
+    return product.attributes.map((set) => {
+      const onSelect = (attr: Attribute) => {
+        this.setState({
+          selectedAttributes: {
+            ...this.state.selectedAttributes,
+            [set.id]: attr.id,
+          },
+        });
+      };
+
+      return (
+        <div key={set.id}>
+          <S.Label>{set.name}</S.Label>
+          <AttributeSelect
+            onSelect={onSelect}
+            selectedAttributes={this.state.selectedAttributes}
+            set={set}
+          />
+        </div>
+      );
+    });
+  }
+
+  renderProductPrice(product: PricedProduct) {
+    return (
+      <div>
+        <S.Label>Price</S.Label>
+        <S.Price>
+          {product.price.currency.symbol}
+          {product.price.amount}
+        </S.Price>
+      </div>
+    );
+  }
+
+  renderCartButton(product: PricedProduct) {
+    const { id, inStock } = product;
+    const { addToCart } = this.props;
+    const { selectedAttributes } = this.state;
+
+    const onClick = () => inStock && addToCart(id, selectedAttributes);
+
+    return (
+      <S.CartButton inStock={inStock} onClick={onClick}>
+        {product.inStock ? "add to cart" : "out of stock"}
+      </S.CartButton>
+    );
+  }
+
+  renderProductDescription(product: PricedProduct) {
+    return (
+      <S.Description
+        dangerouslySetInnerHTML={{ __html: product.description }}
+      />
+    );
+  }
+
+  renderProduct(product: PricedProduct) {
+    return (
+      <S.Container>
+        {this.renderProductImages(product.gallery)}
+        <S.DescriptionList>
+          {this.renderProductName(product)}
+          {this.renderProductAttributes(product)}
+          {this.renderProductPrice(product)}
+          {this.renderCartButton(product)}
+          {this.renderProductDescription(product)}
+        </S.DescriptionList>
+      </S.Container>
+    );
+  }
+
+  renderMeta(title: string) {
+    return (
+      <Helmet>
+        <title>{title} - Scandiweb Junior React Test</title>
+      </Helmet>
+    );
+  }
+
   render() {
-    const { product, loading, addToCart } = this.props;
+    const { product, loading } = this.props;
 
     if (loading) {
       return this.renderLoading();
@@ -63,65 +168,8 @@ class ProductDescription extends PureComponent<
 
     return (
       <>
-        <Helmet>
-          <title>{product.name} - Scandiweb Junior React Test</title>
-        </Helmet>
-        <S.Container>
-          <S.ThumbnailGrid>
-            {product.gallery.length > 1 && (
-              <S.ThumbnailList>
-                {product.gallery.slice(1).map((img) => {
-                  return <S.Thumbnail key={img} alt="thumb" src={img} />;
-                })}
-              </S.ThumbnailList>
-            )}
-            <S.BigThumbnail alt="thumb" src={product.gallery[0]} />
-          </S.ThumbnailGrid>
-          <S.DescriptionList>
-            <div>
-              <S.Brand>{product.brand}</S.Brand>
-              <S.Name>{product.name}</S.Name>
-            </div>
-            {product.attributes.map((set) => {
-              return (
-                <div key={set.id}>
-                  <S.Label>{set.name}</S.Label>
-                  <AttributeSelect
-                    onSelect={(attr) => {
-                      this.setState({
-                        selectedAttributes: {
-                          ...this.state.selectedAttributes,
-                          [set.id]: attr.id,
-                        },
-                      });
-                    }}
-                    selectedAttributes={this.state.selectedAttributes}
-                    set={set}
-                  />
-                </div>
-              );
-            })}
-            <div>
-              <S.Label>Price</S.Label>
-              <S.Price>
-                {product.price.currency.symbol}
-                {product.price.amount}
-              </S.Price>
-            </div>
-            <S.CartButton
-              inStock={product.inStock}
-              onClick={() =>
-                product.inStock &&
-                addToCart(product.id, this.state.selectedAttributes)
-              }
-            >
-              {product.inStock ? "Add to cart" : "out of stock"}
-            </S.CartButton>
-            <S.Description
-              dangerouslySetInnerHTML={{ __html: product.description }}
-            />
-          </S.DescriptionList>
-        </S.Container>
+        {this.renderMeta(product.name)}
+        {this.renderProduct(product)}
       </>
     );
   }

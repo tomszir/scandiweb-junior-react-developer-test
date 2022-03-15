@@ -2,25 +2,26 @@ import { PureComponent } from "react";
 import { connect } from "react-redux";
 import { EmptyCartIcon } from "../../icons";
 import { AppDispatch, RootState } from "../../store";
-import { getItemCount, toggleOverlay } from "../../store/cartSlice";
+import { toggleOverlay } from "../../store/cartSlice";
+import { CartItem } from "../../types";
 import * as S from "./CartButton.style";
 
 class CartButton extends PureComponent<CartButtonProps> {
   renderBadge = () => {
-    const { cartItemCount } = this.props;
+    const { cart } = this.props;
 
-    if (cartItemCount <= 0) {
+    if (cart.length <= 0) {
       return null;
     }
 
-    return <S.Badge>{cartItemCount}</S.Badge>;
+    return <S.Badge>{cart.length}</S.Badge>;
   };
 
   render() {
     const { toggleCartOverlay } = this.props;
 
     return (
-      <S.Button id="cart-button" onClick={toggleCartOverlay}>
+      <S.Button onClick={toggleCartOverlay}>
         <EmptyCartIcon />
         {this.renderBadge()}
       </S.Button>
@@ -29,12 +30,12 @@ class CartButton extends PureComponent<CartButtonProps> {
 }
 
 export interface CartButtonProps {
-  cartItemCount: number;
+  cart: CartItem[];
   toggleCartOverlay: () => void;
 }
 
 export const mapStateToProps = (state: RootState) => ({
-  cartItemCount: getItemCount(state),
+  cart: state.cart.items,
 });
 
 export const mapDispatchToProps = (dispatch: AppDispatch) => ({

@@ -80,6 +80,22 @@ export const addToCart = createAsyncThunk(
   }
 );
 
+const matchAttributes = (
+  a: { [key: string]: string },
+  b: { [key: string]: string }
+) => {
+  const aLen = Object.keys(a).length;
+  const bLen = Object.keys(b).length;
+
+  if (aLen === bLen) {
+    return Object.keys(a).every(
+      (key) => b.hasOwnProperty(key) && b[key] === a[key]
+    );
+  }
+
+  return false;
+};
+
 export const cartSlice = createSlice({
   initialState,
   name: "cart",
@@ -98,11 +114,13 @@ export const cartSlice = createSlice({
       const {
         payload: { id, attributeId, attributeItemId },
       } = action;
+
       const item = state.items.find((c) => c.product.id === id);
 
       if (!item) {
         return;
       }
+
       const index = state.items.indexOf(item);
 
       state.items[index] = {
@@ -113,9 +131,21 @@ export const cartSlice = createSlice({
         },
       };
     },
-    incrementItem: (state, action: PayloadAction<string>) => {
-      const { payload } = action;
-      const item = state.items.find((c) => c.product.id === payload);
+    incrementItem: (
+      state,
+      action: PayloadAction<{
+        id: string;
+        selectedAttributes: { [key: string]: string };
+      }>
+    ) => {
+      const {
+        payload: { id, selectedAttributes },
+      } = action;
+      const item = state.items.find(
+        (c) =>
+          c.product.id === id &&
+          matchAttributes(c.selectedAttributes, selectedAttributes)
+      );
 
       if (!item) {
         return;
@@ -128,23 +158,38 @@ export const cartSlice = createSlice({
         amount: item.amount + 1,
       };
     },
-    decrementItem: (state, action: PayloadAction<string>) => {
-      const { payload } = action;
-      const item = state.items.find((c) => c.product.id === payload);
+    decrementItem: (
+      state,
+      action: PayloadAction<{
+        id: string;
+        selectedAttributes: { [key: string]: string };
+      }>
+    ) => {
+      const {
+        payload: { id, selectedAttributes },
+      } = action;
+
+      const item = state.items.find(
+        (c) =>
+          c.product.id === id &&
+          matchAttributes(c.selectedAttributes, selectedAttributes)
+      );
 
       // Item not in the cart, nothing to decrement
       if (!item) {
         return;
       }
 
+      const index = state.items.indexOf(item);
+
       if (item.amount === 1) {
-        state.items = state.items.filter(
-          ({ product: { id } }) => id !== payload
-        );
+        console.log(index);
+        state.items = [
+          ...state.items.slice(0, index),
+          ...state.items.slice(index + 1),
+        ];
         return;
       }
-
-      const index = state.items.indexOf(item);
 
       state.items[index] = {
         ...item,
@@ -163,28 +208,34 @@ export const cartSlice = createSlice({
           },
         } = action;
 
+        const defaultSelectedAttributes = product.attributes
+          .map((attr) => {
+            return {
+              key: attr.id,
+              value: attr.items[0].id,
+            };
+          })
+          .reduce((a, b) => ({ ...a, [b.key]: b.value }), {});
+
+        const newAttributes = {
+          ...defaultSelectedAttributes,
+          ...(selectedAttributes || {}),
+        };
+
         const { id } = product;
-        const item = state.items.find((c) => c.product.id === id);
+        const item = state.items.find(
+          (c) =>
+            c.product.id === id &&
+            matchAttributes(c.selectedAttributes, newAttributes)
+        );
 
         // Item is not in the cart right now
         if (!item) {
-          const defaultSelectedAttributes = product.attributes
-            .map((attr) => {
-              return {
-                key: attr.id,
-                value: attr.items[0].id,
-              };
-            })
-            .reduce((a, b) => ({ ...a, [b.key]: b.value }), {});
-
           state.items = [
             ...state.items,
             {
               product,
-              selectedAttributes: {
-                ...defaultSelectedAttributes,
-                ...(selectedAttributes || {}),
-              },
+              selectedAttributes: newAttributes,
               amount: 1,
             },
           ];

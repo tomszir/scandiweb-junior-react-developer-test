@@ -6,7 +6,7 @@ export const Row = styled.div`
   flex-wrap: wrap;
 `;
 
-export const Button = styled.button<{ active?: boolean }>`
+export const Button = styled.button<{ active?: boolean; isDisabled?: boolean }>`
   outline: none;
 
   color: #000;
@@ -27,6 +27,14 @@ export const Button = styled.button<{ active?: boolean }>`
       color: #fff;
       opacity: 1;
     `}
+
+  ${({ isDisabled }) =>
+    isDisabled &&
+    css`
+      cursor: default;
+      pointer-events: none;
+      opacity: 0.8;
+    `}
 `;
 
 export const Icon = styled.div`
@@ -44,7 +52,11 @@ export const Icon = styled.div`
   }
 `;
 
-export const SwatchButton = styled.button<{ active?: boolean; color: string }>`
+export const SwatchButton = styled.button<{
+  active?: boolean;
+  isDisabled?: boolean;
+  color: string;
+}>`
   outline: none;
   display: flex;
   font-size: 16px;
@@ -57,6 +69,14 @@ export const SwatchButton = styled.button<{ active?: boolean; color: string }>`
   height: 48px;
   background-color: ${({ color }) => color};
   position: relative;
+
+  ${({ isDisabled }) =>
+    isDisabled &&
+    css`
+      cursor: default;
+      pointer-events: none;
+      opacity: 0.8;
+    `}
 
   ${({ active }) =>
     active &&

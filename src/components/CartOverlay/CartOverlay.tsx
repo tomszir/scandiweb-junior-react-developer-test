@@ -19,12 +19,15 @@ class CartOverlay extends PureComponent<CartOverlayProps> {
     const { dropdownRef } = this;
     const { toggleCartOverlay } = this.props;
 
+    const targetEl = e.target as HTMLElement;
+
     if (!e.target) return;
     if (!dropdownRef.current) return;
 
     const { bottom, left, right } = dropdownRef.current.getBoundingClientRect();
 
     if (bottom > e.clientY && e.clientX > left && e.clientX < right) return;
+    if (e.clientY > 80 && targetEl.tagName.toLowerCase() === "button") return;
 
     toggleCartOverlay();
   };
@@ -49,7 +52,15 @@ class CartOverlay extends PureComponent<CartOverlayProps> {
     return (
       <S.ItemList>
         {cart.map((item) => {
-          return <CartOverlayProduct key={item.product.id} {...item} />;
+          return (
+            <CartOverlayProduct
+              key={
+                item.product.id +
+                Object.values(item.selectedAttributes).toString()
+              }
+              {...item}
+            />
+          );
         })}
       </S.ItemList>
     );
@@ -60,7 +71,8 @@ class CartOverlay extends PureComponent<CartOverlayProps> {
   }
 
   renderFooter() {
-    const { currentCurrency, cartItemTotalCost } = this.props;
+    const { currentCurrency, cartItemTotalCost, toggleCartOverlay } =
+      this.props;
 
     return (
       <footer>
@@ -72,7 +84,9 @@ class CartOverlay extends PureComponent<CartOverlayProps> {
           </span>
         </S.TotalRow>
         <S.ButtonRow>
-          <S.Button>View Bag</S.Button>
+          <S.LinkButton to="/cart" onClick={toggleCartOverlay}>
+            View Bag
+          </S.LinkButton>
           <S.PrimaryButton>Checkout</S.PrimaryButton>
         </S.ButtonRow>
       </footer>

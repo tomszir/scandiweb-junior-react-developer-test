@@ -1,3 +1,4 @@
+import { Link } from "react-router-dom";
 import styled from "styled-components";
 
 export const Overlay = styled.div`
@@ -9,6 +10,8 @@ export const Overlay = styled.div`
   z-index: 100000;
   position: absolute;
   min-height: 100vh;
+  height: 100%;
+  overflow: hidden;
 `;
 
 export const Wrapper = styled.div`
@@ -18,6 +21,7 @@ export const Wrapper = styled.div`
   position: relative;
   padding-bottom: 32px;
   margin: 0 auto;
+  height: 100%;
 `;
 
 export const Dropdown = styled.div`
@@ -26,6 +30,9 @@ export const Dropdown = styled.div`
   padding: 12px;
   width: 340px;
   right: 0;
+  max-height: 90%;
+  overflow: hidden;
+  overflow-y: auto;
   background-color: #fff;
 `;
 
@@ -60,9 +67,12 @@ export const ButtonRow = styled.div`
   gap: 12px;
 `;
 
-export const Button = styled.button`
+export const LinkButton = styled(Link)`
   flex: 1;
   cursor: pointer;
+  display: flex;
+  justify-content: center;
+  text-decoration: none;
   text-transform: uppercase;
   padding: 10px 28px;
   font-size: 14px;
@@ -72,7 +82,14 @@ export const Button = styled.button`
   background-color: transparent;
 `;
 
-export const PrimaryButton = styled(Button)`
+export const PrimaryButton = styled.button`
+  flex: 1;
+  cursor: pointer;
+  text-transform: uppercase;
+  padding: 10px 28px;
+  font-size: 14px;
+  font-weight: 600;
+  border: 1px solid #000;
   color: #fff;
   background-color: ${({ theme }) => theme.colors.primary};
   border-color: transparent;
