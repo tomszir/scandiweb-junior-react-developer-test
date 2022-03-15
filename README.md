@@ -5,8 +5,6 @@ Made in correspondance to [these requirements](https://www.notion.so/Entry-React
 
 ## First Revision
 
-An `x` indicates it has been done, some points contain personal comments.
-
 - [x] Currency Switcher items don't highlight on hover.
 
 - [x] The product brand is missing on PLP.
