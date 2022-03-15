@@ -7,12 +7,23 @@ export const Container = styled.div`
   display: grid;
   gap: 80px;
   grid-template-columns: auto 40%;
+
+  @media screen and (max-width: 968px) {
+    grid-template-columns: auto;
+  }
 `;
 
 export const ThumbnailGrid = styled.div`
   display: grid;
-  grid-template-columns: auto 1fr;
   gap: 16px;
+
+  grid-template-rows: auto;
+  grid-template-columns: auto 1fr;
+
+  @media screen and (max-width: 968px) {
+    grid-template-columns: auto;
+    grid-template-rows: auto 1fr;
+  }
 `;
 
 export const DescriptionList = styled.div`
@@ -23,16 +34,24 @@ export const DescriptionList = styled.div`
 
 export const ThumbnailList = styled.div`
   display: flex;
-  flex-direction: column;
-  height: 100%;
   gap: 16px;
-  max-width: 160px;
-  min-width: 50px;
+  flex-direction: column;
+  width: 100px;
+  height: 100%;
+  overflow-y: auto;
+  max-height: 100%;
+
+  @media screen and (max-width: 968px) {
+    flex-direction: row;
+    height: 100px;
+    width: 100%;
+    max-width: 100%;
+  }
 `;
 
 export const Thumbnail = styled.img`
-  aspect-ratio: 1;
   flex: 1;
+  aspect-ratio: 1;
   object-fit: cover;
 `;
 

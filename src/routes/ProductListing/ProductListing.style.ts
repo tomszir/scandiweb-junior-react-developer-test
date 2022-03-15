@@ -12,6 +12,14 @@ export const ProductGrid = styled.div`
   grid-template-columns: repeat(3, 1fr);
   column-gap: 32px;
   row-gap: 48px;
+
+  @media screen and (max-width: 968px) {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  @media screen and (max-width: 668px) {
+    grid-template-columns: 1fr;
+  }
 `;
 
 export const Heading = styled.h1`
